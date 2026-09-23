@@ -1,0 +1,194 @@
+---
+title: "Analysis of Social Media Usage Among Students"
+author: "Tina Mariyam Jacab"
+enrollment_no: "2505101270264"
+# Enrollment No: 2505101270264
+date: "2026-09-23"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    df_print: paged
+---
+
+# 1. Introduction
+
+Social media is commonly used by students for communication, entertainment, education and socializing. This Tiny Project analyzes a small fictional student dataset to understand daily social media usage and its relationship with study time and academic performance.
+
+## Objective
+
+The main objectives are:
+
+- Import student social media data from a CSV file.
+- Check and clean missing values.
+- Calculate basic descriptive statistics.
+- Compare usage across platforms and purposes.
+- Create graphs and plots.
+- Examine the relationship between social media usage and academic performance.
+- Interpret the results and present findings.
+
+# 2. Data Importing
+
+The dataset contains 30 fictional students and includes gender, primary social media platform, daily social media hours, study hours, sleep hours, main purpose and academic performance.
+
+```{r import-data}
+student_data <- read.csv("social_media_usage_students.csv")
+head(student_data)
+str(student_data)
+summary(student_data)
+```
+
+**Code explanation:** `read.csv()` imports the CSV file. `head()` displays the first rows, `str()` shows the structure and data types, and `summary()` gives a basic statistical summary.
+
+# 3. Data Preprocessing and Cleaning
+
+```{r cleaning}
+# Check missing values
+colSums(is.na(student_data))
+
+# Replace missing numeric values with the column median
+student_data$Daily_Social_Media_Hours[
+  is.na(student_data$Daily_Social_Media_Hours)
+] <- median(student_data$Daily_Social_Media_Hours, na.rm = TRUE)
+
+student_data$Sleep_Hours[
+  is.na(student_data$Sleep_Hours)
+] <- median(student_data$Sleep_Hours, na.rm = TRUE)
+
+# Check again
+colSums(is.na(student_data))
+```
+
+**Code explanation:** `is.na()` identifies missing values. The missing numeric observations are replaced with their respective median values. `na.rm = TRUE` tells R to ignore missing values while calculating the median.
+
+# 4. Statistical Analysis
+
+```{r statistics}
+mean_social <- mean(student_data$Daily_Social_Media_Hours)
+median_social <- median(student_data$Daily_Social_Media_Hours)
+sd_social <- sd(student_data$Daily_Social_Media_Hours)
+
+mean_study <- mean(student_data$Daily_Study_Hours)
+mean_marks <- mean(student_data$Academic_Performance)
+
+mean_social
+median_social
+sd_social
+mean_study
+mean_marks
+```
+
+### Main results
+
+- Mean social media usage: **3.10 hours/day**
+- Median social media usage: **3.00 hours/day**
+- Standard deviation: **1.03 hours**
+- Mean study time: **2.55 hours/day**
+- Mean academic performance: **77.00**
+
+**Interpretation:** The average student in this sample spends about 3.10 hours per day on social media. The standard deviation shows how much individual usage differs from the average.
+
+# 5. Platform Analysis
+
+```{r platform}
+platform_count <- table(student_data$Primary_Platform)
+platform_count
+
+platform_avg <- aggregate(
+  Daily_Social_Media_Hours ~ Primary_Platform,
+  data = student_data,
+  FUN = mean
+)
+platform_avg
+
+barplot(
+  platform_avg$Daily_Social_Media_Hours,
+  names.arg = platform_avg$Primary_Platform,
+  main = "Average Daily Social Media Usage by Platform",
+  xlab = "Primary Platform",
+  ylab = "Average Hours per Day"
+)
+```
+
+**Interpretation:** The bar chart compares average daily usage among the main platforms represented in the dataset.
+
+# 6. Distribution of Social Media Usage
+
+```{r histogram}
+hist(
+  student_data$Daily_Social_Media_Hours,
+  main = "Distribution of Daily Social Media Usage",
+  xlab = "Hours per Day",
+  ylab = "Number of Students"
+)
+```
+
+**Interpretation:** The histogram shows how students are distributed across different levels of daily social media usage.
+
+# 7. Purpose of Social Media Use
+
+```{r purpose}
+purpose_count <- table(student_data$Main_Purpose)
+purpose_count
+
+pie(
+  purpose_count,
+  main = "Main Purpose of Social Media Use",
+  labels = paste(names(purpose_count), purpose_count)
+)
+```
+
+**Interpretation:** The pie chart shows the major purposes for which students report using social media.
+
+# 8. Relationship with Academic Performance
+
+```{r correlation}
+correlation <- cor(
+  student_data$Daily_Social_Media_Hours,
+  student_data$Academic_Performance
+)
+
+correlation
+
+plot(
+  student_data$Daily_Social_Media_Hours,
+  student_data$Academic_Performance,
+  main = "Social Media Usage vs Academic Performance",
+  xlab = "Social Media Hours per Day",
+  ylab = "Academic Performance",
+  pch = 19
+)
+```
+
+The calculated correlation for this dataset is approximately **-0.962**.
+
+**Interpretation:** The correlation describes the direction and strength of the linear relationship in this sample. A correlation value by itself does not prove that social media usage causes changes in academic performance.
+
+# 9. Relationship with Study Time
+
+```{r study-correlation}
+cor(
+  student_data$Daily_Social_Media_Hours,
+  student_data$Daily_Study_Hours
+)
+```
+
+For this sample, the correlation between social media hours and study hours is approximately **-0.940**.
+
+# 10. Findings
+
+1. Students in the sample use social media for several purposes, including communication, education, entertainment and socializing.
+2. Average daily social media usage is approximately **3.10 hours**.
+3. Social media usage varies between students, as shown by the standard deviation of **1.03 hours**.
+4. The platform comparison shows differences in average usage.
+5. The correlation analysis describes the association between social media usage, study time and academic performance in this sample.
+
+# 11. Conclusion
+
+This Tiny Project demonstrates how R can be used to import, clean, analyze and visualize student social media usage data. The analysis provides a simple statistical overview of usage patterns and their relationships with study time and academic performance.
+
+**Note:** The dataset is fictional and is intended only for academic demonstration. The results should not be generalized to all students.
+
+# 12. R Code Summary
+
+The project uses basic R functions such as `read.csv()`, `is.na()`, `mean()`, `median()`, `sd()`, `aggregate()`, `table()`, `barplot()`, `hist()`, `pie()`, `plot()` and `cor()` to complete the analysis.
